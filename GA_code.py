@@ -38,3 +38,6 @@ def hol_eval_func (w, date_start, date_end):
         return 1
 
 def gr_eval_func():
+
+a = input()
+print(a)
