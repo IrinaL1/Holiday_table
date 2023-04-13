@@ -1,7 +1,7 @@
 import math
 
-def date_trans(date_s):
-    year, month, day = map(int, date_s.strip().split('.'))
+def date_trans(date_string):
+    year, month, day = map(int, date_string.strip().split('.'))
     if month == 1:
         n_date = day
     elif month == 2:
@@ -38,6 +38,13 @@ def hol_eval_func (w, date_start, date_end):
         return 1
 
 def gr_eval_func():
+    return 1
 
-a = input()
-print(a)
+kalendar = [i for i in range(1,366)]
+file = open("holidays2023.txt", "r")
+weekends = list(map(str, file.read().strip().split()))
+for i in range(len(weekends)):
+    day_int = date_trans(weekends[i])
+    ind = kalendar.index(day_int)
+    kalendar = kalendar[:ind]+kalendar[ind + 1:]
+print(kalendar)
