@@ -26,3 +26,5 @@ def date_trans(date_s):
     elif month == 12:
         n_date = day + 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30
     return n_date
+
+    file = open()
