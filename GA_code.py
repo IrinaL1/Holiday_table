@@ -33,12 +33,42 @@ k2 = 1
 k3 = 1
 
 
-def hol_eval_func (w, date_start, date_end):
+def hol_eval_func (w, h_date_start, h_date_end, w_date_start, w_date_end):
+    if (h_date_end - h_date_start <= 0):
+        print("Wrong holiday. Change start = ", h_date_start, "and end date = ", h_date_end, "or check the lenght\n")
+        return -1
+    if (w_date_end - w_date_start <= 0):
+        print("Wrong holiday. Change start = ", w_date_start, "and end date = ", w_date_end, "or check the lenght\n")
+        return -1
     if (w == 0):
         return 1
+    if (w == 0.5):
+        w_date_start = w_date_start - 5
+        w_date_end = w_date_end + 5
+        if (h_date_start - w_date_start >= 0 and w_date_end - h_date_end >= 0):
+            return 1
+        elif (h_date_end - w_date_start >= 0 and h_date_end - w_date_end <= 0):
+            return (h_date_end - w_date_start + 1)/(h_date_end - h_date_start + 1)
+        elif (h_date_start - w_date_start >= 0 and h_date_start - w_date_end <= 0):
+            return (w_date_end - h_date_start + 1)/(h_date_end - h_date_start + 1)
+        else:
+            return 0
+    elif (w == 1):
+        if (h_date_start - w_date_start >= 0 and w_date_end - h_date_end >= 0):
+            return 1
+        elif (h_date_end - w_date_start >= 0 and h_date_end - w_date_end <= 0):
+            return (h_date_end - w_date_start + 1)/(h_date_end - h_date_start + 1)
+        elif (h_date_start - w_date_start >= 0 and h_date_start - w_date_end <= 0):
+            return (w_date_end - h_date_start + 1)/(h_date_end - h_date_start + 1)
+        else:
+            return 0
+    else:
+        print("Wrong value of w. It must be 0, 0.5 or 1.\n")
+        return -1
 
 def gr_eval_func():
     return 1
+
 
 kalendar = [i for i in range(1,366)]
 file = open("holidays2023.txt", "r")
@@ -48,3 +78,7 @@ for i in range(len(weekends)):
     ind = kalendar.index(day_int)
     kalendar = kalendar[:ind]+kalendar[ind + 1:]
 print(kalendar)
+
+a = hol_eval_func(1, 1, 8, 1, 7)
+print(a)
+
