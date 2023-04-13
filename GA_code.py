@@ -1,4 +1,5 @@
 import math
+
 def date_trans(date_s):
     year, month, day = map(int, date_s.strip().split('.'))
     if month == 1:
@@ -27,4 +28,13 @@ def date_trans(date_s):
         n_date = day + 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30
     return n_date
 
-    file = open()
+k1 =1
+k2 = 1
+k3 = 1
+
+
+def hol_eval_func (w, date_start, date_end):
+    if (w == 0):
+        return 1
+
+def gr_eval_func():
