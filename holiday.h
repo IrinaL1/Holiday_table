@@ -18,7 +18,7 @@ class Holiday {
     int get_person();
     double get_v();
     void set_v(double new_v);
-    double hol_eval(double w, std::vector<std::pair<int, int>>);
+    double hol_eval(double w, std::vector<std::pair<int, int>> wishes);
 };
 
 #endif //HOLIDAY_H_

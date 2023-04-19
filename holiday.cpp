@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdio>
+#include <algorithm> 
 
 #include "holiday.h"
 
@@ -39,7 +40,7 @@ void Holiday::set_v(double new_v){
     v = new_v;
 }
 
-double hol_eval_func (double w, int h_date_start, int h_date_end, int w_date_start, int w_date_end){
+double hol_eval_func(double w, int h_date_start, int h_date_end, int w_date_start, int w_date_end){
 	if (h_date_end - h_date_start <= 0){
 		std::cout << "Wrong holiday. Change start = " << h_date_start << "and end date = " << h_date_end << "or check the lenght\n";
 		return -1;
@@ -87,11 +88,18 @@ double hol_eval_func (double w, int h_date_start, int h_date_end, int w_date_sta
 	}
 }
 
-double Holiday::hol_eval(double w, std::vector<std::pair<int, int>>){
+double Holiday::hol_eval(double w, std::vector<std::pair<int, int>> wishes){
+	std::vector <double> v = {-1.0, -1.0, -1.0};
     if (w == 0){
         return 1;
     }
-    if (w == 0.5){
-
-    }
+	if (wishes.size() == 0){
+		return 1;
+	}
+	else { 
+		for (int i = 0; i < wishes.size(); i++){
+			v[i] = hol_eval_func(w, start_date, end_date, wishes[i].first, wishes[i].second);
+		}
+	}
+	return *max_element(v.begin(), v.end());
 }
