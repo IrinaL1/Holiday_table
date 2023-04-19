@@ -1,5 +1,6 @@
 import math
 import random
+import copy
 
 def date_trans(date_string):
     year, month, day = map(int, date_string.strip().split('.'))
@@ -74,60 +75,86 @@ def distr_holid(i):
     #выбираем начало длиного отпуска
     ind = random.randint(0,len(kalendar) - 10)
     day_start_end_personal_holidays.append([i, kalendar[ind], kalendar[ind + 9]])
-    #выбираем начало короткого отпуска
+    #выбираем начало короткого отпуска, если его нельзя вставить перед длинным
     if ind - 10 < 0:
         ind1 = random.randint(ind + 15, len(kalendar) - 5)
+    #1-ый кор.отп. если нельзя вставить после длинного 
     elif ind + 20 > len(kalendar):
         ind1 = random.randint(0, ind - 10)
+    #если можем вставить и до и после
     else:
         ind1_1 = random.randint(0, ind - 10)
         ind1_2 = random.randint(ind + 15, len(kalendar) - 5)
         ind1 = random.choice([ind1_1, ind1_2])
     day_start_end_personal_holidays.append([i, kalendar[ind1], kalendar[ind1 + 4]])
     buf = ind - ind1
+    #если не можем вставить между отпусками
     if buf < 20 and buf > -25:
+    #если длинный позже короткого
         if buf > 0:
+    #если нельзя перед коротким вставить
             if ind1 - 10 < 0:
                 ind2 = random.randint(ind + 15, len(kalendar) - 5)
+    #если нельзя после длинного вставить
             elif ind + 20 > len(kalendar):
                 ind2 = random.randint(0, ind1 - 10)
+    #если можно вставить и до и после
             else:
                 ind2_1 = random.randint(0, ind1 - 10)
                 ind2_2 = random.randint(ind + 15, len(kalendar) - 5)
                 ind2 = random.choice([ind2_1, ind2_2])
+    #если короткий позже
         else:
+    #если нельзя вставить перед длинным
             if ind - 10 < 0:
                 ind2 = random.randint(ind1 + 10, len(kalendar) - 5)
+    #если нельзя вставить после короткого
             elif ind1 + 15 > len(kalendar):
                 ind2 = random.randint(0, ind - 10)
+    #если можно встаивть и до и после
             else:
                 ind2_1 = random.randint(0, ind - 10)
                 ind2_2 = random.randint(ind1 + 10, len(kalendar) - 5)
                 ind2 = random.choice([ind2_1, ind2_2])
+    #если можно вставить между отпусками
     else:
+    #если длинный позже короткого
         if buf > 0:
-            if ind1 - 10 < 0:
+    #если можно вставить только между отпусками
+            if ind1 - 10 < 0 and ind + 20 > len(kalendar):
+                ind2 = random.randint(ind1 + 10, ind - 10)
+    #если нельзя вставить до короткого
+            elif ind1 - 10 < 0:
                 ind2_2 = random.randint(ind + 15, len(kalendar) - 5)
                 ind2_3 = random.randint(ind1 + 10, ind - 10)
                 ind2 = random.choice([ind2_2, ind2_3])
+    #если нельзя вставить после длинного
             elif ind + 20 > len(kalendar):
                 ind2_1 = random.randint(0, ind1 - 10)
                 ind2_3 = random.randint(ind1 + 10, ind - 10)
                 ind2 = random.choice([ind2_1, ind2_3])
+    #если можно вставить куда угодно
             else:
                 ind2_1 = random.randint(0, ind1 - 10)
                 ind2_2 = random.randint(ind + 15, len(kalendar) - 5)
                 ind2_3 = random.randint(ind1 + 10, ind - 10)
                 ind2 = random.choice([ind2_1, ind2_2, ind2_3])
+    #если короткий позже
         else:
-            if ind - 10 < 0:
+    #если можно всавить только между
+            if ind - 10 < 0 and ind1 + 15 > len(kalendar):
+                ind2 = random.randint(ind + 15, ind1 - 10)
+    #если нельзя вставить до длинного
+            elif ind - 10 < 0:
                 ind2_2 = random.randint(ind1 + 10, len(kalendar) - 5)
                 ind2_3 = random.randint(ind + 15, ind1 - 10)
                 ind2 = random.choice([ind2_2, ind2_3])
+    #если нельзя вставить после короткого
             elif ind1 + 15 > len(kalendar):
                 ind2_1 = random.randint(0, ind - 10)
                 ind2_3 = random.randint(ind + 15, ind1 - 10)
                 ind2 = random.choice([ind2_1, ind2_3])
+    #если можно вставить куда угодно
             else:
                 ind2_1 = random.randint(0, ind - 10)
                 ind2_2 = random.randint(ind1 + 10, len(kalendar) - 5)                
@@ -142,12 +169,19 @@ for i in range(len(weekends)):
     day_int = date_trans(weekends[i])
     ind = kalendar.index(day_int)
     kalendar = kalendar[:ind]+kalendar[ind + 1:]
-#print(kalendar)
+print(kalendar)
 
 count_personal = 6
 count_personal_holidays = [20] * count_personal
 day_start_end_personal_holidays = []
-for i in range(count_personal):
-    distr_holid(i)
-for i in day_start_end_personal_holidays:
-    print(i)
+population = []
+for j in range(100):
+    for i in range(count_personal):
+        distr_holid(i)
+    population.append(copy.deepcopy(day_start_end_personal_holidays))
+    day_start_end_personal_holidays = []
+for i in population:
+    for j in i:
+        print(j)
+    print("-------------------------------------------------")
+print(kalendar)
