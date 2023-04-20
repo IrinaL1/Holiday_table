@@ -72,6 +72,7 @@ def gr_eval_func():
     return 1
 
 def distr_holid(i):
+    global day_start_end_personal_holidays
     #выбираем начало длиного отпуска
     ind = random.randint(0,len(kalendar) - 10)
     day_start_end_personal_holidays.append([i, kalendar[ind], kalendar[ind + 9]])
@@ -161,6 +162,27 @@ def distr_holid(i):
                 ind2_3 = random.randint(ind + 15, ind1 - 10)
                 ind2 = random.choice([ind2_1, ind2_2, ind2_3])
     day_start_end_personal_holidays.append([i, kalendar[ind2], kalendar[ind2 + 4]])
+   # return day_start_end_personal_holidays
+
+def mutation(count_pers):
+    global mutant
+    global day_start_end_personal_holidays
+    for i in range(len(mutant)):
+        buf = random.randint(0, count_pers - 1)
+        j = 0
+        while j < len(mutant[i]):
+            if mutant[i][j][0] == buf:
+                mutant[i] = mutant[i][:j] + mutant[i][j + 1:]
+                continue
+            j += 1
+        distr_holid(buf)
+        mutant[i] += day_start_end_personal_holidays
+        day_start_end_personal_holidays = []
+
+def reproduction():
+    global children
+    parent_A = random.choice(population)
+    
 
 kalendar = [i for i in range(1,366)]
 file = open("holidays2023.txt", "r")
@@ -171,7 +193,7 @@ for i in range(len(weekends)):
     kalendar = kalendar[:ind]+kalendar[ind + 1:]
 print(kalendar)
 
-count_personal = 6
+count_personal = 40
 count_personal_holidays = [20] * count_personal
 day_start_end_personal_holidays = []
 population = []
@@ -185,3 +207,11 @@ for i in population:
         print(j)
     print("-------------------------------------------------")
 print(kalendar)
+mutant = copy.deepcopy(population)
+mutation(count_personal)
+print("##########################################")
+for i in mutant:
+    for j in i:
+        print(j)
+    print("-------------------------------------------------")
+children = []
