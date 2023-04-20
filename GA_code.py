@@ -1,6 +1,7 @@
 import math
 import random
 import copy
+import ctypes
 
 def date_trans(date_string):
     year, month, day = map(int, date_string.strip().split('.'))
