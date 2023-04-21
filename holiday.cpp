@@ -3,6 +3,7 @@
 #include <algorithm> 
 #include <cstring>
 #include <string>
+#include <vector>
 
 #include "holiday.h"
 
