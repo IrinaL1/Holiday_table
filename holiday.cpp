@@ -1,6 +1,8 @@
 #include <iostream>
 #include <cstdio>
 #include <algorithm> 
+#include <cstring>
+#include <string>
 
 #include "holiday.h"
 
@@ -106,6 +108,7 @@ double Holiday::hol_eval(double w, std::vector<std::pair<int, int>> wishes){
 
 
 extern "C" Holiday * create(int new_start_date, int new_end_date, int new_person){
+
 	return new Holiday(new_start_date, new_end_date, new_person);
 }
 
@@ -124,6 +127,20 @@ extern "C"{
 
 	double get_v(Holiday *H){
     	return H->get_v();
+	};
+
+	double hol_eval(Holiday *H, double w, char* s_wishes){
+		std::vector<std::pair<int, int>> wishes;
+		char * buf = strtok(s_wishes, " ;-");
+		while (buf != NULL){
+			for(int i = 0; ;i++){
+				wishes[i].first = std::stoi(buf);
+				buf = strtok(NULL, " ;-");
+				wishes[i].second = std::stoi(buf);
+				buf = strtok(NULL, " ;-");
+			}
+		}
+		return H->hol_eval(w, wishes);
 	};
 }
 
