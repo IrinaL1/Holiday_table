@@ -1,0 +1,1 @@
+g++ -fPIC -shared -g -O0 -o lib.so holiday.cpp

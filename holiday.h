@@ -12,7 +12,6 @@ class Holiday {
 
     public:
     Holiday(int new_start_date, int new_end_date, int new_person);
-    virtual ~Holiday();
     int get_start_date();
     int get_end_date();
     int get_person();
