@@ -170,22 +170,41 @@ def distr_holid(i):
 
 def mutation(count_pers):
     global mutant
+    global population
     global day_start_end_personal_holidays
     for i in range(len(mutant)):
         buf = random.randint(0, count_pers - 1)
         j = 0
         while j < len(mutant[i]):
-            if mutant[i][j][0] == buf:
+            if lib.get_person(mutant[i][j]) == buf:
                 mutant[i] = mutant[i][:j] + mutant[i][j + 1:]
                 continue
             j += 1
         distr_holid(buf)
         mutant[i] += day_start_end_personal_holidays
         day_start_end_personal_holidays = []
+    population += mutant
 
 def reproduction():
-    global children
-    parent_A = random.choice(population)
+    global childrens
+    global population
+    children = []
+    parent = copy.deepcopy(population)
+    while len(parent) > 1:
+        ind_parent_A = random.randint(0, len(parent) // 2 - 1)
+        ind_parent_B = random.randint(len(parent) // 2, len(parent) - 1)
+        parent_A = parent[ind_parent_A]
+        parent_B = parent[ind_parent_B]
+        for i in range(0, len(parent_A), 3):
+            chek = random.random()
+            if chek < 0.5:
+                children += [parent_A[i], parent_A[i + 1], parent_A[i + 2]]
+            else:
+                children += [parent_B[i], parent_B[i + 1], parent_B[i + 2]]
+        parent = parent[:min(ind_parent_A, ind_parent_B)] + parent[min(ind_parent_A, ind_parent_B) + 1:max(ind_parent_A, ind_parent_B)] + parent[max(ind_parent_A, ind_parent_B) + 1:]
+        childrens.append(children)
+        children = []
+    population += childrens
     
 
 kalendar = [i for i in range(1,366)]
@@ -221,7 +240,17 @@ for j in range(100):
         distr_holid(i)
     population.append(copy.deepcopy(day_start_end_personal_holidays))
     day_start_end_personal_holidays = []
+
+childrens = []
+reproduction()
+
+mutant = copy.deepcopy(population)
+mutation(count_personal)
+print("##########################################")
+k = 0
 for i in population:
+    print(k)
+    k += 1
     for j in i:
         print(lib.get_start_date(j), end = ' ')
         print(lib.get_end_date(j), end = ' ')
@@ -229,11 +258,3 @@ for i in population:
         print(lib.get_v(j))
     print("-------------------------------------------------")
 
-mutant = copy.deepcopy(population)
-#mutation(count_personal)
-#print("##########################################")
-#for i in mutant:
-#    for j in i:
-#        print(j)
-#    print("-------------------------------------------------")
-#children = []
