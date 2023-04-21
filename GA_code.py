@@ -1,6 +1,7 @@
 import math
 import random
 import copy
+import ctypes
 
 def date_trans(date_string):
     year, month, day = map(int, date_string.strip().split('.'))
@@ -75,7 +76,8 @@ def distr_holid(i):
     global day_start_end_personal_holidays
     #выбираем начало длиного отпуска
     ind = random.randint(0,len(kalendar) - 10)
-    day_start_end_personal_holidays.append([i, kalendar[ind], kalendar[ind + 9]])
+    b = lib.create(kalendar[ind], kalendar[ind + 9], i)
+    day_start_end_personal_holidays.append(b)
     #выбираем начало короткого отпуска, если его нельзя вставить перед длинным
     if ind - 10 < 0:
         ind1 = random.randint(ind + 15, len(kalendar) - 5)
@@ -87,7 +89,8 @@ def distr_holid(i):
         ind1_1 = random.randint(0, ind - 10)
         ind1_2 = random.randint(ind + 15, len(kalendar) - 5)
         ind1 = random.choice([ind1_1, ind1_2])
-    day_start_end_personal_holidays.append([i, kalendar[ind1], kalendar[ind1 + 4]])
+    b = lib.create(kalendar[ind1], kalendar[ind1 + 4], i)
+    day_start_end_personal_holidays.append(b)
     buf = ind - ind1
     #если не можем вставить между отпусками
     if buf < 20 and buf > -25:
@@ -161,7 +164,8 @@ def distr_holid(i):
                 ind2_2 = random.randint(ind1 + 10, len(kalendar) - 5)                
                 ind2_3 = random.randint(ind + 15, ind1 - 10)
                 ind2 = random.choice([ind2_1, ind2_2, ind2_3])
-    day_start_end_personal_holidays.append([i, kalendar[ind2], kalendar[ind2 + 4]])
+    b = lib.create(kalendar[ind2], kalendar[ind2 + 4], i)
+    day_start_end_personal_holidays.append(b)
    # return day_start_end_personal_holidays
 
 def mutation(count_pers):
@@ -191,12 +195,27 @@ for i in range(len(weekends)):
     day_int = date_trans(weekends[i])
     ind = kalendar.index(day_int)
     kalendar = kalendar[:ind]+kalendar[ind + 1:]
-print(kalendar)
+#print(kalendar)
+
+lib = ctypes.CDLL('./lib.so')
+lib.create.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int]
+lib.create.restype = ctypes.c_void_p
+lib.get_start_date.argtypes = [ctypes.c_void_p]
+lib.get_start_date.restype = ctypes.c_int
+lib.get_end_date.argtypes = [ctypes.c_void_p]
+lib.get_end_date.restype = ctypes.c_int
+lib.get_person.argtypes = [ctypes.c_void_p]
+lib.get_person.restype = ctypes.c_int
+lib.get_v.argtypes = [ctypes.c_void_p]
+lib.get_v.restype = ctypes.c_double
+#lib.hol_eval.argtypes = [ctypes.c_void_p, ctypes.c_double, ctypes.c_void_p]
+#lib.hol_eval.restype = ctypes.c_double
 
 count_personal = 40
 count_personal_holidays = [20] * count_personal
 day_start_end_personal_holidays = []
 population = []
+wishes = []
 for j in range(100):
     for i in range(count_personal):
         distr_holid(i)
@@ -204,14 +223,17 @@ for j in range(100):
     day_start_end_personal_holidays = []
 for i in population:
     for j in i:
-        print(j)
+        print(lib.get_start_date(j), end = ' ')
+        print(lib.get_end_date(j), end = ' ')
+        print(lib.get_person(j), end = ' ')
+        print(lib.get_v(j))
     print("-------------------------------------------------")
-print(kalendar)
+
 mutant = copy.deepcopy(population)
-mutation(count_personal)
-print("##########################################")
-for i in mutant:
-    for j in i:
-        print(j)
-    print("-------------------------------------------------")
-children = []
+#mutation(count_personal)
+#print("##########################################")
+#for i in mutant:
+#    for j in i:
+#        print(j)
+#    print("-------------------------------------------------")
+#children = []
