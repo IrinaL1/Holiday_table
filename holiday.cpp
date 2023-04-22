@@ -129,6 +129,12 @@ extern "C"{
 	double get_v(Holiday *H){
     	return H->get_v();
 	};
+        
+        void set_v(Holiday *H, double new_v){
+        H->set_v(new_v);     
+        };
+
+        
 
 	double hol_eval(Holiday *H, double w, std::string s_wishes){
 		std::vector<std::pair<int, int>> wishes;
