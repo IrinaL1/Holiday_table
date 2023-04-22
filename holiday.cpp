@@ -130,18 +130,33 @@ extern "C"{
     	return H->get_v();
 	};
 
-	double hol_eval(Holiday *H, double w, char* s_wishes){
+	double hol_eval(Holiday *H, double w, std::string s_wishes){
 		std::vector<std::pair<int, int>> wishes;
-		char * buf = strtok(s_wishes, " ;-");
-		while (buf != NULL){
-			for(int i = 0; ;i++){
-				wishes[i].first = std::stoi(buf);
-				buf = strtok(NULL, " ;-");
-				wishes[i].second = std::stoi(buf);
-				buf = strtok(NULL, " ;-");
-			}
-		}
-		return H->hol_eval(w, wishes);
+		std::string buf = "";
+		int d1, d2;
+		
+		for (int i = 0; i <= s_wishes.size(); i++){
+        if(s_wishes[i] == '-'){
+            d1 = stoi(buf);
+            buf.clear();
+        }
+        else if(s_wishes[i] == ';' || s_wishes[i] == '\0'){
+            d2 = stoi(buf);
+            wishes.push_back(std::make_pair(d1, d2));
+            buf.clear();
+        }
+        else if(s_wishes[i] == ' '){
+            continue;
+        }
+        else if(isdigit(s_wishes[i])){
+            buf.push_back(s_wishes[i]);
+        }
+        else{
+            std::cout << "Error:Indefined symbol. Check file.\n";
+        }
+    }
+		
+	return H->hol_eval(w, wishes);
 	};
 }
 
