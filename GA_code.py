@@ -170,6 +170,9 @@ kalendar = [i for i in range(1,366)]
 work_days = [[] for i in range(12)]
 file = open("holidays2023.txt", "r")
 weekends = list(map(str, file.read().strip().split()))
+file.close()
+s_imp_date = "";
+s_wishes_date = "";
 for i in range(len(weekends)):
     day_int = date_trans(weekends[i])
     ind = kalendar.index(day_int)
