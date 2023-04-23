@@ -11,7 +11,7 @@ int main(){
     std::vector<std::pair<int, int>> wishes;
     int d1, d2;
     
-	for (int i = 0; i <= s_wishes.size(); i++){
+	/*for (int i = 0; i <= s_wishes.size(); i++){
         if(s_wishes[i] == '-'){
             d1 = stoi(buf);
             buf.clear();
@@ -37,5 +37,8 @@ int main(){
     for (int i = 0; i < wishes.size(); i++){
         std::cout << wishes[i].first << ", " << wishes[i].second << std::endl;
     }
+    */
+    std::vector<std::vector<int>> works = {{1, 2, 3}, {4, 5, 6}};
+    std::cout << works.size() << std::endl;
     return 0;
 }

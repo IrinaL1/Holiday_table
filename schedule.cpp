@@ -39,8 +39,19 @@ void Schedule::set_gr_cost(double cost_new){
     cost = cost_new;
 }
 
-double Schedule::calc_distr(){
+//На вход подается массив рабочих дней согласно календарю и число сотрудников
+double Schedule::calc_distr(std::vector<std::vector<int>> calendar, int emp){
+    std::vector<int> works;    //массив трудодней с учётом кол-ва работников
     
+    for(int i = 0; i < calendar.size(); i++){
+        works[i] = emp * calendar[i].size();
+    }
+    for(int i = 0; i < calendar.size(); i++){
+        for(int j = 0; j < this->gr.size(); j++){
+            std::cout << "Hello" << std::endl;
+        }
+    }
+    return 0;
 }
 
 //На вход подаются важные даты со включением обеих границ (нач. дата, кон. дата), число сотрудников
