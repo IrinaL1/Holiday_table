@@ -101,32 +101,32 @@ double Holiday::hol_eval(double w, std::vector<std::pair<int, int>> wishes){
 	}
 	else { 
 		for (int i = 0; i < wishes.size(); i++){
-			v[i] = hol_eval_func(w, start_date, end_date, wishes[i].first, wishes[i].second);
+			v[i] = hol_eval_func(w, this->start_date, this->end_date, wishes[i].first, wishes[i].second);
 		}
 	}
 	return *max_element(v.begin(), v.end());
 }
 
 
-extern "C" Holiday * create(int new_start_date, int new_end_date, int new_person){
+extern "C" Holiday * create_H(int new_start_date, int new_end_date, int new_person){
 
 	return new Holiday(new_start_date, new_end_date, new_person);
 }
 
 extern "C"{
-	int get_start_date(Holiday *H){
+	int get_start_date(Holiday* H){
     	return H->get_start_date();
 	};
 
-	int get_end_date(Holiday *H){
+	int get_end_date(Holiday* H){
     	return H->get_end_date();
 	};
 
-	int get_person(Holiday *H){
+	int get_person(Holiday* H){
     	return H->get_person();
 	};
 
-	double get_v(Holiday *H){
+	double get_v(Holiday* H){
     	return H->get_v();
 	};
         
@@ -136,7 +136,7 @@ extern "C"{
 
         
 
-	double hol_eval(Holiday *H, double w, std::string s_wishes){
+	double hol_eval(Holiday* H, double w, std::string s_wishes){
 		std::vector<std::pair<int, int>> wishes;
 		std::string buf = "";
 		int d1, d2;
