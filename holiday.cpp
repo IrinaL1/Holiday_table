@@ -62,24 +62,24 @@ double hol_eval_func(double w, int h_date_start, int h_date_end, int w_date_star
 			return 1;
 		}
 		else if (h_date_end - w_date_start >= 0 && h_date_end - w_date_end <= 0){
-			return (h_date_end - w_date_start + 1)/(h_date_end - h_date_start + 1);
+			return (h_date_end - w_date_start + 1.0)/(h_date_end - h_date_start + 1);
 		}
 		else if (h_date_start - w_date_start >= 0 && h_date_start - w_date_end <= 0){
-			return (w_date_end - h_date_start + 1)/(h_date_end - h_date_start + 1);
+			return (w_date_end - h_date_start + 1.0)/(h_date_end - h_date_start + 1);
 		}
 		else{
 			return 0;
 		}
     }
     if (w == 1){
-		if (h_date_start - w_date_start >= 0 && w_date_end - h_date_end >= 0){
+		if ((h_date_start - w_date_start >= 0) && (w_date_end - h_date_end >= 0)){
 			return 1;
 		}
-		else if (h_date_end - w_date_start >= 0 && h_date_end - w_date_end <= 0){
-			return (h_date_end - w_date_start + 1)/(h_date_end - h_date_start + 1);
+		else if ((h_date_end - w_date_start >= 0) && (h_date_end - w_date_end <= 0)){
+			return (h_date_end - w_date_start + 1.0)/(h_date_end - h_date_start + 1);
 		}
-		else if (h_date_start - w_date_start >= 0 && h_date_start - w_date_end <= 0){
-			return (w_date_end - h_date_start + 1)/(h_date_end - h_date_start + 1);
+		else if ((h_date_start - w_date_start >= 0) && (h_date_start - w_date_end <= 0)){
+			return (w_date_end - h_date_start + 1.0)/(h_date_end - h_date_start + 1);
 		}
 		else{
 			return 0;
@@ -129,12 +129,15 @@ extern "C"{
 	double get_v(Holiday* H){
     	return H->get_v();
 	};
-        
+    
     void set_v(Holiday *H, double new_v){
         H->set_v(new_v);     
     };
 
-	double hol_eval(Holiday* H, double w, std::string s_wishes){
+        
+
+	double hol_eval(Holiday* H, double w, char * c_wishes){
+		std::string s_wishes = c_wishes;
 		std::vector<std::pair<int, int>> wishes;
 		std::string buf = "";
 		int d1, d2;
@@ -159,7 +162,7 @@ extern "C"{
             std::cout << "Error:Indefined symbol. Check file.\n";
         }
     }
-		
+	
 	return H->hol_eval(w, wishes);
 	};
 }

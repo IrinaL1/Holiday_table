@@ -1,1 +1,1 @@
-g++ -fPIC -shared -g -O0 -o lib.so holiday.cpp
+g++ -fPIC -shared -g -O0 -o lib.so holiday.cpp schedule.cpp
