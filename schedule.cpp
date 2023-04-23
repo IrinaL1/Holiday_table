@@ -109,7 +109,8 @@ extern "C"{
         S->set_gr_cost(new_cost);
     };
 
-	double calc_min(Schedule* S, std::string s_imp_dates, int emp){
+	double calc_min(Schedule* S, char* c_imp_dates, int emp){
+        std::string s_imp_dates = c_imp_dates;
         std::vector<std::pair<int, int>> imp_dates;
 		std::string buf = "";
 		int d1, d2;

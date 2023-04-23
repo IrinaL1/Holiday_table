@@ -204,13 +204,25 @@ lib.hol_eval.argtypes = [ctypes.c_void_p, ctypes.c_double, ctypes.c_char_p]
 lib.hol_eval.restype = ctypes.c_double
 lib.set_v.argtypes = [ctypes.c_void_p, ctypes.c_double]
 lib.create_S.argtypes = [ctypes.c_void_p]
+lib.create_S.restype = ctypes.c_void_p
+lib.get_gr_destr.argtypes = [ctypes.c_void_p]
+lib.get_gr_destr.restype = ctypes.c_int
+lib.get_gr_min.argtypes = [ctypes.c_void_p]
+lib.get_gr_min.restype = ctypes.c_int
+lib.get_gr_cost.argtypes = [ctypes.c_void_p]
+lib.get_gr_cost.restype = ctypes.c_int
+lib.set_gr_destr.argtypes = [ctypes.c_void_p, ctypes.c_double]
+lib.set_gr_min.argtypes = [ctypes.c_void_p, ctypes.c_double]
+lib.set_gr_cost.argtypes = [ctypes.c_void_p, ctypes.c_double]
+lib.calc_min.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int]
+lib.calc_min.restype = ctypes.c_double
 
-count_personal = 5
+count_personal = 40
 count_personal_holidays = [20] * count_personal
 day_start_end_personal_holidays = []
 population = []
 wishes = []
-for j in range(10):
+for j in range(100):
     for i in range(count_personal):
         distr_holid(i)
     population.append(copy.deepcopy(day_start_end_personal_holidays))
