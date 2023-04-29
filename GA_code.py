@@ -4,7 +4,10 @@ import copy
 import ctypes
 
 def date_trans(date_string):
-    year, month, day = map(int, date_string.strip().split('.'))
+    if date_string[:4].count(".") == 0:
+        year, month, day = map(int, date_string.strip().split('.'))
+    else:
+        day, month, year = map(int, date_string.strip().split('.'))
     if month == 1:
         n_date = day
     elif month == 2:
@@ -171,8 +174,27 @@ work_days = [[] for i in range(12)]
 file = open("holidays2023.txt", "r")
 weekends = list(map(str, file.read().strip().split()))
 file.close()
-s_imp_date = "";
-s_wishes_date = "";
+file = open("imp_dates.txt", "r")
+inp = list(map(str, file.read().strip().split()))
+flag = False
+s_imp_date = ""
+for i in inp:
+    if i == "-":
+        s_imp_date += i
+        flag = True
+    else:
+        if flag:
+            if buff > date_trans(i):
+                print("error impotant date")
+                exit()
+            flag = False
+            buff = date_trans(i)
+            s_imp_date += str(buff) + ';'
+            continue
+        buff = date_trans(i)
+        s_imp_date += str(buff)
+s_imp_date = s_imp_date[:-1]
+s_wishes_date = ""
 for i in range(len(weekends)):
     day_int = date_trans(weekends[i])
     ind = kalendar.index(day_int)
