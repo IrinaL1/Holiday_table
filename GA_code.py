@@ -34,12 +34,17 @@ def date_trans(date_string):
         n_date = day + 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30
     return n_date
 
-def distr_holid(i):
+def distr_holid(i, grafic):
+    global flag
     global day_start_end_personal_holidays
     #выбираем начало длиного отпуска
     ind = random.randint(0,len(kalendar) - 10)
     b = lib.create_H(kalendar[ind], kalendar[ind + 9], i)
-    day_start_end_personal_holidays.append(b)
+    if flag:
+        grafic = lib.create_S(b)
+        flag = False
+    else:
+        lib.set_hol(grafic, b)
     #выбираем начало короткого отпуска, если его нельзя вставить перед длинным
     if ind - 10 < 0:
         ind1 = random.randint(ind + 15, len(kalendar) - 5)
@@ -52,7 +57,7 @@ def distr_holid(i):
         ind1_2 = random.randint(ind + 15, len(kalendar) - 5)
         ind1 = random.choice([ind1_1, ind1_2])
     b = lib.create_H(kalendar[ind1], kalendar[ind1 + 4], i)
-    day_start_end_personal_holidays.append(b)
+    lib.set_hol(grafic, b)
     buf = ind - ind1
     #если не можем вставить между отпусками
     if buf < 20 and buf > -25:
@@ -127,45 +132,66 @@ def distr_holid(i):
                 ind2_3 = random.randint(ind + 15, ind1 - 10)
                 ind2 = random.choice([ind2_1, ind2_2, ind2_3])
     b = lib.create_H(kalendar[ind2], kalendar[ind2 + 4], i)
-    day_start_end_personal_holidays.append(b)
+    lib.set_hol(grafic, b)
+    return grafic
    # return day_start_end_personal_holidays
 
 def mutation(count_pers):
     global mutant
     global population
-    global day_start_end_personal_holidays
+    global grafic
+    global flag
     for i in range(len(mutant)):
         buf = random.randint(0, count_pers - 1)
         j = 0
-        while j < len(mutant[i]):
-            if lib.get_person(mutant[i][j]) == buf:
-                mutant[i] = mutant[i][:j] + mutant[i][j + 1:]
+        while j < lib.length(mutant[i]):
+            if lib.get_person(lib.get_h(mutant[i], j)) == buf:
+                lib.delit(mutant[i], j)
                 continue
             j += 1
-        distr_holid(buf)
-        mutant[i] += day_start_end_personal_holidays
-        day_start_end_personal_holidays = []
+        flag = False
+        mutant[i] = distr_holid(buf, mutant[i])
     population += mutant
 
 def reproduction():
     global childrens
     global population
-    children = []
+    global count_personal
+    children = 0
     parent = copy.deepcopy(population)
     while len(parent) > 1:
         ind_parent_A = random.randint(0, len(parent) // 2 - 1)
         ind_parent_B = random.randint(len(parent) // 2, len(parent) - 1)
         parent_A = parent[ind_parent_A]
         parent_B = parent[ind_parent_B]
-        for i in range(0, len(parent_A), 3):
+        l_a = lib.length(parent_A)
+        l_b = lib.length(parent_B)
+        flag = True
+        for i in range(0, count_personal):
             chek = random.random()
             if chek < 0.5:
-                children += [parent_A[i], parent_A[i + 1], parent_A[i + 2]]
+                for j in range(l_a):
+                    b = lib.get_h(parent_A, j)
+                    if i == 0 and flag:
+                        if i == lib.get_person(b):
+                            children = lib.create_S(b)
+                            flag = False 
+                    else:
+                        if i == lib.get_person(b):
+                            lib.set_hol(children, b)
             else:
-                children += [parent_B[i], parent_B[i + 1], parent_B[i + 2]]
+                for j in range(l_b):
+                    b = lib.get_h(parent_B, j)
+                    if i == 0 and flag:
+                        if i == lib.get_person(b):
+                            children = lib.create_S(b)
+                            flag = False 
+                    else:
+                        if i == lib.get_person(b):
+                            lib.set_hol(children, b)
         parent = parent[:min(ind_parent_A, ind_parent_B)] + parent[min(ind_parent_A, ind_parent_B) + 1:max(ind_parent_A, ind_parent_B)] + parent[max(ind_parent_A, ind_parent_B) + 1:]
         childrens.append(children)
-        children = []
+        children = 0
     population += childrens
 
 def choise(): a = 1
@@ -242,6 +268,13 @@ for i in kalendar:
     elif i <= 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30: work_days[10].append(i)
     else: work_days[11].append(i)
 
+str_calendar = ""
+for i in work_days:
+    for j in i:
+        str_calendar += str(j) + ' '
+    str_calendar += "0 "
+str_calendar = str_calendar[:-3]
+
 lib = ctypes.CDLL('./lib.so')
 lib.create_H.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int]
 lib.create_H.restype = ctypes.c_void_p
@@ -269,28 +302,49 @@ lib.set_gr_min.argtypes = [ctypes.c_void_p, ctypes.c_double]
 lib.set_gr_cost.argtypes = [ctypes.c_void_p, ctypes.c_double]
 lib.calc_min.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int]
 lib.calc_min.restype = ctypes.c_double
+lib.set_hol.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
+lib.calc_distr.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int]
+lib.calc_distr.restype = ctypes.c_double
+lib.length.argtypes = [ctypes.c_void_p]
+lib.length.restype = ctypes.c_int
+lib.get_h.argtypes = [ctypes.c_void_p, ctypes.c_int]
+lib.get_h.restype = ctypes.c_void_p
+lib.delit.argtypes = [ctypes.c_void_p, ctypes.c_int]
 
 count_personal_holidays = [20] * count_personal
 day_start_end_personal_holidays = []
 population = []
 wishes = []
-for j in range(100):
+grafic = 0
+for j in range(2):
+    flag = True
     for i in range(count_personal):
-        distr_holid(i)
-    population.append(copy.deepcopy(day_start_end_personal_holidays))
-    day_start_end_personal_holidays = []
+        grafic = distr_holid(i, grafic)
+    population.append(grafic)
+    grafic = 0
 
 childrens = []
 reproduction()
 
-mutant = copy.deepcopy(population)
+mutant = []
+for i in population:
+    l = lib.length(i)
+    for j in range(l):
+        if j == 0:
+            b = lib.get_h(i, j)
+            mut = lib.create_S(b)
+        else:
+            b = lib.get_h(i, j)
+            lib.set_hol(mut, b)
+    mutant.append(mut)
 mutation(count_personal)
 print("##########################################")
 k = 0
 for i in population:
     print(k)
     k += 1
-    for j in i:
+    for j_ in range(lib.length(i)):
+        j = lib.get_h(i, j_)
         string = dict_wish_date.get(lib.get_person(j), ["",0])
         a = ctypes.create_string_buffer(str.encode(string[0]))
         print(lib.get_start_date(j), end = ' ')

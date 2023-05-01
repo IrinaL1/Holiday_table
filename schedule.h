@@ -17,6 +17,9 @@ class Schedule {
     double get_gr_destr();
     double get_gr_min();
     double get_gr_cost();
+    Holiday* get_h(int i);
+    void del(int i);
+    int length();
     void set_gr_destr(double d_new);
     void set_gr_min(double m_new);
     void set_gr_cost(double cost_new);
