@@ -39,6 +39,10 @@ void Schedule::set_gr_cost(double cost_new){
     cost = cost_new;
 }
 
+void Schedule::set_hol(Holiday h){
+    this->gr.push_back(h);
+}
+
 //На вход подается массив рабочих дней согласно календарю и число сотрудников
 double Schedule::calc_distr(std::vector<std::vector<int>> calendar, int emp){
     std::vector<int> all_works(12, 0);    //массив трудодней с учётом кол-ва работников
@@ -131,6 +135,14 @@ extern "C"{
     void set_gr_cost(Schedule* S, double new_cost){
         S->set_gr_cost(new_cost);
     };
+
+    void set_hol(Schedule* S, Holiday h){
+        S->set_hol(h);
+    };
+
+    double calc_distr(Schedule* S, std::vector<std::vector<int>> calendar, int emp){
+        return S->calc_distr(calendar, emp);
+    }
 
 	double calc_min(Schedule* S, char* c_imp_dates, int emp){
         std::string s_imp_dates = c_imp_dates;
