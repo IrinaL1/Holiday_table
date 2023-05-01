@@ -6,12 +6,13 @@
 #include <vector>
 
 int main(){
-    std::string s_wishes = "12-24;56-78; 99-100";
+    std::string s_wishes = "";
     std::string buf = "";
     std::vector<std::pair<int, int>> wishes;
     int d1, d2;
     
-	/*for (int i = 0; i <= s_wishes.size(); i++){
+    /*if (s_wishes.size() == 0) return 0;
+	for (int i = 0; i <= s_wishes.size(); i++){
         if(s_wishes[i] == '-'){
             d1 = stoi(buf);
             buf.clear();

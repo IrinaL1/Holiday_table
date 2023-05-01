@@ -142,6 +142,7 @@ extern "C"{
 		std::string buf = "";
 		int d1, d2;
 		
+		if (s_wishes.size() == 0) return H->hol_eval(w, wishes);
 		for (int i = 0; i <= s_wishes.size(); i++){
         if(s_wishes[i] == '-'){
             d1 = stoi(buf);

@@ -167,7 +167,29 @@ def reproduction():
         childrens.append(children)
         children = []
     population += childrens
-    
+
+def choise(): a = 1
+
+def input_date(inp):
+    flag = False
+    s_imp_date = ""
+    for i in inp:
+        if i == "-":
+            s_imp_date += i
+            flag = True
+        else:
+            if i[-1] == ";": i = i[:-1]
+            if flag:
+                if buff > date_trans(i):
+                    print("error impotant date")
+                    exit()
+                flag = False
+                buff = date_trans(i)
+                s_imp_date += str(buff) + ';'
+                continue
+            buff = date_trans(i)
+            s_imp_date += str(buff)
+    return s_imp_date
 
 kalendar = [i for i in range(1,366)]
 work_days = [[] for i in range(12)]
@@ -176,25 +198,31 @@ weekends = list(map(str, file.read().strip().split()))
 file.close()
 file = open("imp_dates.txt", "r")
 inp = list(map(str, file.read().strip().split()))
-flag = False
-s_imp_date = ""
-for i in inp:
-    if i == "-":
-        s_imp_date += i
-        flag = True
-    else:
-        if flag:
-            if buff > date_trans(i):
-                print("error impotant date")
-                exit()
-            flag = False
-            buff = date_trans(i)
-            s_imp_date += str(buff) + ';'
-            continue
-        buff = date_trans(i)
-        s_imp_date += str(buff)
+s_imp_date = input_date(inp)
 s_imp_date = s_imp_date[:-1]
-s_wishes_date = ""
+file.close()
+file = open("information.txt", "r")
+count_personal = int(file.readline())
+inp = list(map(str, file.read().strip().split("\n")))
+person_ind = {}
+dict_wish_date = {}
+for i in range(len(inp)):
+    inp_1, inp_2 = inp[i].split("-")
+    inp_2 = float(inp_2)
+    if not(inp_1[-1].isalpha()): inp_1 = inp_1[:-1]
+    person_ind[inp_1] = i
+    dict_wish_date[i] = ["", inp_2]
+file.close()
+file = open("wishes_date.txt", "r")
+inp = list(map(str, file.read().strip().split("\n")))
+for i in inp:
+    inp_1 = list(map(str, i.strip().split()))
+    inp_1 = [(inp_1[0] + " " + inp_1[1])] + inp_1[2:]
+    ind = person_ind[inp_1[0][:-1]]
+    s_wishes_date = input_date(inp_1[1:])
+    dict_wish_date[ind][0] = s_wishes_date[:-1]
+file.close()
+
 for i in range(len(weekends)):
     day_int = date_trans(weekends[i])
     ind = kalendar.index(day_int)
@@ -242,7 +270,6 @@ lib.set_gr_cost.argtypes = [ctypes.c_void_p, ctypes.c_double]
 lib.calc_min.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int]
 lib.calc_min.restype = ctypes.c_double
 
-count_personal = 40
 count_personal_holidays = [20] * count_personal
 day_start_end_personal_holidays = []
 population = []
@@ -263,12 +290,12 @@ k = 0
 for i in population:
     print(k)
     k += 1
-    string = "12-31;56-78; 99-119"
-    a = ctypes.create_string_buffer(str.encode(string))
     for j in i:
+        string = dict_wish_date.get(lib.get_person(j), ["",0])
+        a = ctypes.create_string_buffer(str.encode(string[0]))
         print(lib.get_start_date(j), end = ' ')
         print(lib.get_end_date(j), end = ' ')
         print(lib.get_person(j), end = ' ')
-        print(lib.hol_eval(j, 1, a))
+        print(lib.hol_eval(j, string[1], a))
     print("-------------------------------------------------")
     
