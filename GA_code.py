@@ -168,6 +168,8 @@ def reproduction():
         children = []
     population += childrens
 
+def choise(): a = 1
+
 def input_date(inp):
     flag = False
     s_imp_date = ""
@@ -176,6 +178,7 @@ def input_date(inp):
             s_imp_date += i
             flag = True
         else:
+            if i[-1] == ";": i = i[:-1]
             if flag:
                 if buff > date_trans(i):
                     print("error impotant date")
@@ -203,12 +206,20 @@ count_personal = int(file.readline())
 inp = list(map(str, file.read().strip().split("\n")))
 person_ind = {}
 for i in range(len(inp)):
+    if not(inp[i][-1].isalpha()): inp[i] = inp[i][:-1]
     person_ind[inp[i]] = i
 file.close()
 file = open("wishes_date.txt", "r")
+inp = list(map(str, file.read().strip().split("\n")))
+dict_wish_date = {}
+for i in inp:
+    inp_1 = list(map(str, i.strip().split()))
+    inp_1 = [(inp_1[0] + " " + inp_1[1])] + inp_1[2:]
+    ind = person_ind[inp_1[0][:-1]]
+    s_wishes_date = input_date(inp_1[1:])
+    dict_wish_date[ind] = s_wishes_date[:-1]
+file.close()
 
-
-s_wishes_date = ""
 for i in range(len(weekends)):
     day_int = date_trans(weekends[i])
     ind = kalendar.index(day_int)
@@ -276,9 +287,9 @@ k = 0
 for i in population:
     print(k)
     k += 1
-    string = "12-31;56-78; 99-119"
-    a = ctypes.create_string_buffer(str.encode(string))
     for j in i:
+        string = dict_wish_date.get(lib.get_person(j), "")
+        a = ctypes.create_string_buffer(str.encode(string))
         print(lib.get_start_date(j), end = ' ')
         print(lib.get_end_date(j), end = ' ')
         print(lib.get_person(j), end = ' ')
