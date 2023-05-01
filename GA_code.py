@@ -205,19 +205,22 @@ file = open("information.txt", "r")
 count_personal = int(file.readline())
 inp = list(map(str, file.read().strip().split("\n")))
 person_ind = {}
+dict_wish_date = {}
 for i in range(len(inp)):
-    if not(inp[i][-1].isalpha()): inp[i] = inp[i][:-1]
-    person_ind[inp[i]] = i
+    inp_1, inp_2 = inp[i].split("-")
+    inp_2 = float(inp_2)
+    if not(inp_1[-1].isalpha()): inp_1 = inp_1[:-1]
+    person_ind[inp_1] = i
+    dict_wish_date[i] = ["", inp_2]
 file.close()
 file = open("wishes_date.txt", "r")
 inp = list(map(str, file.read().strip().split("\n")))
-dict_wish_date = {}
 for i in inp:
     inp_1 = list(map(str, i.strip().split()))
     inp_1 = [(inp_1[0] + " " + inp_1[1])] + inp_1[2:]
     ind = person_ind[inp_1[0][:-1]]
     s_wishes_date = input_date(inp_1[1:])
-    dict_wish_date[ind] = s_wishes_date[:-1]
+    dict_wish_date[ind][0] = s_wishes_date[:-1]
 file.close()
 
 for i in range(len(weekends)):
@@ -288,11 +291,11 @@ for i in population:
     print(k)
     k += 1
     for j in i:
-        string = dict_wish_date.get(lib.get_person(j), "")
-        a = ctypes.create_string_buffer(str.encode(string))
+        string = dict_wish_date.get(lib.get_person(j), ["",0])
+        a = ctypes.create_string_buffer(str.encode(string[0]))
         print(lib.get_start_date(j), end = ' ')
         print(lib.get_end_date(j), end = ' ')
         print(lib.get_person(j), end = ' ')
-        print(lib.hol_eval(j, 1, a))
+        print(lib.hol_eval(j, string[1], a))
     print("-------------------------------------------------")
     
