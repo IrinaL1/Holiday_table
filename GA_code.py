@@ -167,7 +167,26 @@ def reproduction():
         childrens.append(children)
         children = []
     population += childrens
-    
+
+def input_date(inp):
+    flag = False
+    s_imp_date = ""
+    for i in inp:
+        if i == "-":
+            s_imp_date += i
+            flag = True
+        else:
+            if flag:
+                if buff > date_trans(i):
+                    print("error impotant date")
+                    exit()
+                flag = False
+                buff = date_trans(i)
+                s_imp_date += str(buff) + ';'
+                continue
+            buff = date_trans(i)
+            s_imp_date += str(buff)
+    return s_imp_date
 
 kalendar = [i for i in range(1,366)]
 work_days = [[] for i in range(12)]
@@ -176,24 +195,19 @@ weekends = list(map(str, file.read().strip().split()))
 file.close()
 file = open("imp_dates.txt", "r")
 inp = list(map(str, file.read().strip().split()))
-flag = False
-s_imp_date = ""
-for i in inp:
-    if i == "-":
-        s_imp_date += i
-        flag = True
-    else:
-        if flag:
-            if buff > date_trans(i):
-                print("error impotant date")
-                exit()
-            flag = False
-            buff = date_trans(i)
-            s_imp_date += str(buff) + ';'
-            continue
-        buff = date_trans(i)
-        s_imp_date += str(buff)
+s_imp_date = input_date(inp)
 s_imp_date = s_imp_date[:-1]
+file.close()
+file = open("information.txt", "r")
+count_personal = int(file.readline())
+inp = list(map(str, file.read().strip().split("\n")))
+person_ind = {}
+for i in range(len(inp)):
+    person_ind[inp[i]] = i
+file.close()
+file = open("wishes_date.txt", "r")
+
+
 s_wishes_date = ""
 for i in range(len(weekends)):
     day_int = date_trans(weekends[i])
@@ -242,7 +256,6 @@ lib.set_gr_cost.argtypes = [ctypes.c_void_p, ctypes.c_double]
 lib.calc_min.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int]
 lib.calc_min.restype = ctypes.c_double
 
-count_personal = 40
 count_personal_holidays = [20] * count_personal
 day_start_end_personal_holidays = []
 population = []
