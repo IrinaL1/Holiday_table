@@ -41,17 +41,40 @@ void Schedule::set_gr_cost(double cost_new){
 
 //На вход подается массив рабочих дней согласно календарю и число сотрудников
 double Schedule::calc_distr(std::vector<std::vector<int>> calendar, int emp){
-    std::vector<int> works;    //массив трудодней с учётом кол-ва работников
-    
+    std::vector<int> all_works(12, 0);    //массив трудодней с учётом кол-ва работников
+    std::vector<int> real_works(12, 0);   //массив реальных трудодней с учетом отпусков работников 
+    std::vector<double> work_per(12, 0);  //не знаю, как лучше назвать. Отношение полезной работы к возможной работе
+    std::vector<int>::iterator it1, it2;
+    double min_w, max_w;
     for(int i = 0; i < calendar.size(); i++){
-        works[i] = emp * calendar[i].size();
+        all_works[i] = emp * calendar[i].size();
     }
     for(int i = 0; i < calendar.size(); i++){
         for(int j = 0; j < this->gr.size(); j++){
-            std::cout << "Hello" << std::endl;
+            it1 = find(calendar[i].begin(), calendar[i].end(), this->gr[j].get_start_date());
+            if(it1 != calendar[i].end()){
+                it2 = find(calendar[i].begin(), calendar[i].end(), this->gr[j].get_end_date());
+                if(it2 != calendar[i].end()){
+                    real_works[i] += it2 - it1 + 1;
+                }
+                else{
+                    real_works[i] += it2 - it1;
+                }
+            }
+            else{
+                it2 = find(calendar[i].begin(), calendar[i].end(), this->gr[j].get_end_date());
+                if(it2 != calendar[i].end()){
+                    real_works[i] += it2 - calendar[i].begin() + 1;
+                }
+            }
         }
     }
-    return 0;
+    for(int i = 0; i < work_per.size(); i++){
+        work_per[i] = static_cast<double>(real_works[i])/static_cast<double>(all_works[i]);
+    }
+    min_w = *min_element(work_per.begin(), work_per.begin());
+    max_w = *max_element(work_per.begin(), work_per.begin());
+    return (1 - (max_w - min_w));
 }
 
 //На вход подаются важные даты со включением обеих границ (нач. дата, кон. дата), число сотрудников
@@ -65,19 +88,19 @@ double Schedule::calc_min(std::vector<std::pair<int, int>> imp_dates, int emp){
         int workdays = emp * (imp_dates[i].second - imp_dates[i].first + 1);
         for(int j = 0; j < gr.size(); j++){
             if(gr[j].get_end_date() >= imp_dates[i].first && gr[j].get_end_date() <= imp_dates[i].second){
-                minim[i] = 1 - (gr[j].get_end_date() - imp_dates[i].first + 1)/workdays;
+                minim.push_back(1 - (gr[j].get_end_date() - imp_dates[i].first + 1)/workdays);
             }
             else if(gr[j].get_start_date() >= imp_dates[i].first && gr[j].get_start_date() <= imp_dates[i].second){
-                minim[i] = 1 - (imp_dates[i].second - gr[j].get_start_date() + 1)/workdays;
+                minim.push_back(1 - (imp_dates[i].second - gr[j].get_start_date() + 1)/workdays);
             }
             else if(gr[j].get_start_date() >= imp_dates[i].first && gr[j].get_end_date() <= imp_dates[i].second){
-                minim[i] = 1 - (gr[j].get_end_date() - gr[j].get_start_date() + 1)/workdays;
+                minim.push_back(1 - (gr[j].get_end_date() - gr[j].get_start_date() + 1)/workdays);
             }
             else
-                minim[i] = 1;
+                minim.push_back(1);
         }
-        return *max_element(minim.begin(), minim.begin());
     }
+    return *max_element(minim.begin(), minim.end());
 }
 
 extern "C" Schedule * create_S(Holiday* h){
