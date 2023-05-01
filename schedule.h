@@ -20,6 +20,7 @@ class Schedule {
     void set_gr_destr(double d_new);
     void set_gr_min(double m_new);
     void set_gr_cost(double cost_new);
+    void set_hol(Holiday h);
     double calc_distr(std::vector<std::vector<int>>, int emp);
     double calc_min(std::vector<std::pair<int, int>> imp_dates, int emp);
     double calc_cost();
