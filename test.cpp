@@ -1,5 +1,4 @@
 #include <iostream>
-#include <cstdio>
 #include <algorithm> 
 #include <cstring>
 #include <string>
@@ -41,5 +40,22 @@ int main(){
     */
     std::vector<std::vector<int>> works = {{1, 2, 3}, {4, 5, 6}};
     std::cout << works.size() << std::endl;
+    
+    std::vector<int> v = {1, 2, 3, 4, 5};
+    std::vector<int>::iterator it1, it2;
+    it1 = find(v.begin(), v.end(), 5);
+    it2 = find(v.begin(), v.end(), 2);
+    std::cout << *it1 << std::endl;
+    std::cout << *it2 << std::endl;
+    std::cout << it1 - it2 << std::endl;
+    it1 = v.end();
+    std::cout << it1 - it2 << std::endl;
+    it1 = find(v.begin(), v.end(), 3);
+    it2 = v.begin();
+    std::cout << it1 - it2 << std::endl;
+    //для включения границ нужно везде прибавлять 1, кроме случая, когда граница = v.end()
+    //проверка static_cast
+    std::cout << v[0]/v[1] << std::endl;
+    std::cout << static_cast<double>(v[0])/static_cast<double>(v[1]) << std::endl;
     return 0;
 }
