@@ -137,6 +137,8 @@ extern "C"{
         std::vector<std::pair<int, int>> imp_dates;
 		std::string buf = "";
 		int d1, d2;
+
+        if (s_imp_dates.size() == 0) return S->calc_min(imp_dates, emp);
 		
 		for (int i = 0; i <= s_imp_dates.size(); i++){
             if(s_imp_dates[i] == '-'){
