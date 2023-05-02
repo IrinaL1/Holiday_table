@@ -3,6 +3,7 @@
 #include <algorithm> 
 
 #include "schedule.h"
+#include "holiday.h"
 
 Schedule::Schedule(Holiday h){
     this->gr.push_back(h);
@@ -14,6 +15,19 @@ Schedule::Schedule(Holiday h){
 Schedule::~Schedule(){
     gr.clear();
 }
+
+Holiday* Schedule::get_h(int i){
+    return &(this->gr[i]);
+}
+
+void Schedule::del(int i){
+    this->gr.erase(this->gr.begin() + i);
+}
+
+int Schedule::length(){
+    return gr.size();
+}
+
 
 double Schedule::get_gr_destr(){
     return d;
@@ -112,6 +126,18 @@ extern "C" Schedule * create_S(Holiday* h){
 }
 
 extern "C"{
+    Holiday* get_h (Schedule* S, int i){
+        return S->get_h(i);
+    };
+
+    int length(Schedule* S){
+        return S->length();
+    };
+
+    void delit(Schedule* S, int i){
+        S->del(i);
+    }
+
 	int get_gr_destr(Schedule* S){
     	return S->get_gr_destr();
 	};
@@ -136,11 +162,32 @@ extern "C"{
         S->set_gr_cost(new_cost);
     };
 
-    void set_hol(Schedule* S, Holiday h){
-        S->set_hol(h);
+    void set_hol(Schedule* S, Holiday *h){
+        S->set_hol(*h);
     };
 
-    double calc_distr(Schedule* S, std::vector<std::vector<int>> calendar, int emp){
+    double calc_distr(Schedule* S, char* s_cal, int emp){
+        std::string a = s_cal;
+        std:: string b;
+        int bf;
+        std::vector<std::vector<int>> calendar;
+        std::vector<int> month;
+        for(int i = 0; i <= a.size(); i++){
+            if(a[i] != ' ' and a[i] != '\0'){
+                b += a[i];
+            }
+            else{
+                bf = stoi(b);
+                b = "";
+                if (bf != 0){
+                    month.push_back(bf);
+                }
+                else{
+                    calendar.push_back(month);
+                    month.clear();
+                }
+            }
+        };
         return S->calc_distr(calendar, emp);
     }
 
