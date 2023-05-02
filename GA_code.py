@@ -36,10 +36,14 @@ def date_trans(date_string):
 
 def distr_holid(i, grafic):
     global flag
-    global day_start_end_personal_holidays
+    global dict_wish_date
     #выбираем начало длиного отпуска
     ind = random.randint(0,len(kalendar) - 10)
     b = lib.create_H(kalendar[ind], kalendar[ind + 9], i)
+    string = dict_wish_date.get(lib.get_person(b), ["",0])
+    a = ctypes.create_string_buffer(str.encode(string[0]))
+    v = lib.hol_eval(b, string[1], a)
+    lib.set_v(b, v)
     if flag:
         grafic = lib.create_S(b)
         flag = False
@@ -57,6 +61,10 @@ def distr_holid(i, grafic):
         ind1_2 = random.randint(ind + 15, len(kalendar) - 5)
         ind1 = random.choice([ind1_1, ind1_2])
     b = lib.create_H(kalendar[ind1], kalendar[ind1 + 4], i)
+    string = dict_wish_date.get(lib.get_person(b), ["",0])
+    a = ctypes.create_string_buffer(str.encode(string[0]))
+    v = lib.hol_eval(b, string[1], a)
+    lib.set_v(b, v)
     lib.set_hol(grafic, b)
     buf = ind - ind1
     #если не можем вставить между отпусками
@@ -132,6 +140,10 @@ def distr_holid(i, grafic):
                 ind2_3 = random.randint(ind + 15, ind1 - 10)
                 ind2 = random.choice([ind2_1, ind2_2, ind2_3])
     b = lib.create_H(kalendar[ind2], kalendar[ind2 + 4], i)
+    string = dict_wish_date.get(lib.get_person(b), ["",0])
+    a = ctypes.create_string_buffer(str.encode(string[0]))
+    v = lib.hol_eval(b, string[1], a)
+    lib.set_v(b, v)
     lib.set_hol(grafic, b)
     return grafic
    # return day_start_end_personal_holidays
@@ -194,7 +206,36 @@ def reproduction():
         children = 0
     population += childrens
 
-def choise(): a = 1
+def choise():
+    global k1
+    global k2
+    global k3
+    global population
+    global count_population
+    for i in range(len(population)):
+        grafic = population[i]
+        l = lib.length(grafic)
+        if lib.get_gr_cost(grafic) == 0:
+            sum_f = 0
+            for j in range(l):
+                b = lib.get_h(grafic, j)
+                f_w = k3 * lib.get_v(b)
+                sum_f += f_w
+            sum_f /= l
+            d = lib.get_gr_destr(grafic)
+            m = lib.get_gr_min(grafic)
+            A = sum_f + k1 * d + k2 * m
+            lib.set_gr_cost(grafic, A)
+        for j in range(i):
+            A1 = lib.get_gr_cost(population[i])
+            A2 = lib.get_gr_cost(population[j])
+            if A1 > A2:
+                population = population[:j] + [population[i]] + population[j:i] + population[i + 1:]
+                break
+    for i in range(count_population, len(population)):
+        lib.clean(population[i])
+    population = population[:count_population]
+        
 
 def input_date(inp):
     flag = False
@@ -216,6 +257,10 @@ def input_date(inp):
             buff = date_trans(i)
             s_imp_date += str(buff)
     return s_imp_date
+
+k1 = 5
+k2 = 3
+k3 = 3
 
 kalendar = [i for i in range(1,366)]
 work_days = [[] for i in range(12)]
@@ -292,11 +337,11 @@ lib.set_v.argtypes = [ctypes.c_void_p, ctypes.c_double]
 lib.create_S.argtypes = [ctypes.c_void_p]
 lib.create_S.restype = ctypes.c_void_p
 lib.get_gr_destr.argtypes = [ctypes.c_void_p]
-lib.get_gr_destr.restype = ctypes.c_int
+lib.get_gr_destr.restype = ctypes.c_double
 lib.get_gr_min.argtypes = [ctypes.c_void_p]
-lib.get_gr_min.restype = ctypes.c_int
+lib.get_gr_min.restype = ctypes.c_double
 lib.get_gr_cost.argtypes = [ctypes.c_void_p]
-lib.get_gr_cost.restype = ctypes.c_int
+lib.get_gr_cost.restype = ctypes.c_double
 lib.set_gr_destr.argtypes = [ctypes.c_void_p, ctypes.c_double]
 lib.set_gr_min.argtypes = [ctypes.c_void_p, ctypes.c_double]
 lib.set_gr_cost.argtypes = [ctypes.c_void_p, ctypes.c_double]
@@ -310,39 +355,72 @@ lib.length.restype = ctypes.c_int
 lib.get_h.argtypes = [ctypes.c_void_p, ctypes.c_int]
 lib.get_h.restype = ctypes.c_void_p
 lib.delit.argtypes = [ctypes.c_void_p, ctypes.c_int]
+lib.clean.argtypes = [ctypes.c_void_p]
 
 count_personal_holidays = [20] * count_personal
 day_start_end_personal_holidays = []
 population = []
 wishes = []
 grafic = 0
-for j in range(2):
+count_population = 4
+for j in range(count_population):
     flag = True
     for i in range(count_personal):
         grafic = distr_holid(i, grafic)
     population.append(grafic)
     grafic = 0
-
-childrens = []
-reproduction()
-
-mutant = []
-for i in population:
-    l = lib.length(i)
-    for j in range(l):
-        if j == 0:
-            b = lib.get_h(i, j)
-            mut = lib.create_S(b)
-        else:
-            b = lib.get_h(i, j)
-            lib.set_hol(mut, b)
-    mutant.append(mut)
-mutation(count_personal)
-print("##########################################")
 k = 0
+while True:
+
+    childrens = []
+    reproduction()
+
+    mutant = []
+    for i in population:
+        l = lib.length(i)
+        for j in range(l):
+            if j == 0:
+                b = lib.get_h(i, j)
+                mut = lib.create_S(b)
+            else:
+                b = lib.get_h(i, j)
+                lib.set_hol(mut, b)
+        mutant.append(mut)
+    mutation(count_personal)
+    
+    for i in population:
+        a = ctypes.create_string_buffer(str.encode(str_calendar))
+        b = ctypes.create_string_buffer(str.encode(s_imp_date))
+        d = lib.calc_distr(i, a, count_personal)
+        m = lib.calc_min(i, b, count_personal)
+        lib.set_gr_destr(i, d)
+        lib.set_gr_min(i, m)
+    
+    choise()
+
+    if k % 10000 == 0:
+        print("destr = ", lib.get_gr_destr(population[0]))
+        print("minim = ", lib.get_gr_min(population[0]))
+        print("cost = ", lib.get_gr_cost(population[0]))
+        i = population[0]
+        for j_ in range(lib.length(i)):
+            j = lib.get_h(i, j_)
+            print(lib.get_start_date(j), end = ' ')
+            print(lib.get_end_date(j), end = ' ')
+            print(lib.get_person(j), end = ' ')
+            print(lib.get_v(j))
+        y_n = input("Если хотите закончить вычисление введите n: y/n ")
+        if y_n == "n": break
+
+'''
+k=0
 for i in population:
     print(k)
     k += 1
+    a = ctypes.create_string_buffer(str.encode(str_calendar))
+    b = ctypes.create_string_buffer(str.encode(s_imp_date))
+    print(lib.calc_distr(i, a, count_personal), end = ' ')
+    print(lib.calc_min(i, b, count_personal))
     for j_ in range(lib.length(i)):
         j = lib.get_h(i, j_)
         string = dict_wish_date.get(lib.get_person(j), ["",0])
@@ -350,6 +428,6 @@ for i in population:
         print(lib.get_start_date(j), end = ' ')
         print(lib.get_end_date(j), end = ' ')
         print(lib.get_person(j), end = ' ')
-        print(lib.hol_eval(j, string[1], a))
+        print(lib.get_v(j))
     print("-------------------------------------------------")
-    
+'''  
