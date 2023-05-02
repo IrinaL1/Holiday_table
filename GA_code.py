@@ -316,7 +316,7 @@ day_start_end_personal_holidays = []
 population = []
 wishes = []
 grafic = 0
-for j in range(2):
+for j in range(100):
     flag = True
     for i in range(count_personal):
         grafic = distr_holid(i, grafic)
@@ -343,6 +343,10 @@ k = 0
 for i in population:
     print(k)
     k += 1
+    a = ctypes.create_string_buffer(str.encode(str_calendar))
+    b = ctypes.create_string_buffer(str.encode(s_imp_date))
+    print(lib.calc_distr(i, a, count_personal), end = ' ')
+    print(lib.calc_min(i, b, count_personal))
     for j_ in range(lib.length(i)):
         j = lib.get_h(i, j_)
         string = dict_wish_date.get(lib.get_person(j), ["",0])
