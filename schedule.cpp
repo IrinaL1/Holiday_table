@@ -139,6 +139,10 @@ extern "C"{
         return S->get_h(i);
     };
 
+    void clean(Schedule* S){
+        delete S;
+    };
+
     int length(Schedule* S){
         return S->length();
     };
@@ -147,15 +151,15 @@ extern "C"{
         S->del(i);
     }
 
-	int get_gr_destr(Schedule* S){
+	double get_gr_destr(Schedule* S){
     	return S->get_gr_destr();
 	};
 
-	int get_gr_min(Schedule* S){
+	double get_gr_min(Schedule* S){
     	return S->get_gr_min();
 	};
 
-	int get_gr_cost(Schedule* S){
+	double get_gr_cost(Schedule* S){
     	return S->get_gr_cost();
 	};
 
