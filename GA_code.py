@@ -370,6 +370,7 @@ for j in range(count_population):
     population.append(grafic)
     grafic = 0
 k = 0
+prev_cost = 0
 while True:
 
     childrens = []
@@ -397,11 +398,12 @@ while True:
         lib.set_gr_min(i, m)
     
     choise()
-
-    if k % 10000 == 0:
+    buf_cost = lib.get_gr_cost(population[0])
+    if buf_cost != prev_cost or k % 10**6 == 0:
+        prev_cost = buf_cost
         print("destr = ", lib.get_gr_destr(population[0]))
         print("minim = ", lib.get_gr_min(population[0]))
-        print("cost = ", lib.get_gr_cost(population[0]))
+        print("cost = ", lib.get_gr_cost(population[0]), "from", k1+k2+k3)
         i = population[0]
         for j_ in range(lib.length(i)):
             j = lib.get_h(i, j_)
@@ -409,9 +411,12 @@ while True:
             print(lib.get_end_date(j), end = ' ')
             print(lib.get_person(j), end = ' ')
             print(lib.get_v(j))
+        print("population №", k)
+        print("#"*int(buf_cost)*2 + "-"*(k1+k2+k3 - int(buf_cost))*2)
         y_n = input("Если хотите закончить вычисление введите n: y/n ")
         if y_n == "n": break
-
+        print(end = "\n\n\n")
+    k += 1
 '''
 k=0
 for i in population:
