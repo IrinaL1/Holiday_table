@@ -3,7 +3,10 @@ import random
 import copy
 import ctypes
 
+year = 2023
+
 def date_trans(date_string):
+    global year
     if date_string[:4].count(".") == 0:
         year, month, day = map(int, date_string.strip().split('.'))
     else:
@@ -33,6 +36,34 @@ def date_trans(date_string):
     elif month == 12:
         n_date = day + 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30
     return n_date
+
+def rev_date_trans(date_int):
+    global year
+    if date_int <= 31:
+        s_date = str(date_int) + ".01." + str(year)
+    elif date_int <= 31 + 28:
+        s_date = str(date_int - 31) + ".02." + str(year)
+    elif date_int <= 31 + 28 + 31:
+        s_date = str(date_int - 31 - 28) + ".03." + str(year)
+    elif date_int <= 31 + 28 + 31 + 30:
+        s_date = str(date_int - 31 - 28 - 31) + ".04." + str(year)
+    elif date_int <= 31 + 28 + 31 + 30 + 31:
+        s_date = str(date_int - 31 - 28 - 31 - 30) + ".05." + str(year)
+    elif date_int <= 31 + 28 + 31 + 30 + 31 + 30:
+        s_date = str(date_int - 31 - 28 - 31 - 30 - 31) + ".06." + str(year)
+    elif date_int <= 31 + 28 + 31 + 30 + 31 + 30 + 31: 
+        s_date = str(date_int - 31 - 28 - 31 - 30 - 31 - 30) + ".07." + str(year)
+    elif date_int <= 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31:
+        s_date = str(date_int - 31 - 28 - 31 - 30 - 31 - 30 - 31) + ".08." + str(year)
+    elif date_int <= 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30:
+        s_date = str(date_int - 31 - 28 - 31 - 30 - 31 - 30 - 31 - 31) + ".09." + str(year)
+    elif date_int <= 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31:
+        s_date = str(date_int - 31 - 28 - 31 - 30 - 31 - 30 - 31 - 31 - 30) + ".10." + str(year)
+    elif date_int <= 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30:
+        s_date = str(date_int - 31 - 28 - 31 - 30 - 31 - 30 - 31 - 31 - 30 - 31) + ".11." + str(year)
+    elif date_int <= 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30 + 31:
+        s_date = str(date_int - 31 - 28 - 31 - 30 - 31 - 30 - 31 - 31 - 30 - 31 - 30) + ".12." + str(year)
+    return s_date
 
 def distr_holid(i, grafic):
     global flag
@@ -407,10 +438,14 @@ while True:
         i = population[0]
         for j_ in range(lib.length(i)):
             j = lib.get_h(i, j_)
-            print(lib.get_start_date(j), end = ' ')
-            print(lib.get_end_date(j), end = ' ')
-            print(lib.get_person(j), end = ' ')
-            print(lib.get_v(j))
+            ind_per = lib.get_person(j)
+            for e1, e2 in person_ind.items():
+                if e2 == ind_per:
+                    print(e1, end = ': ')
+                    break
+            print(rev_date_trans(lib.get_start_date(j)), end = ' - ')
+            print(rev_date_trans(lib.get_end_date(j)), end = ' {')
+            print('удовлетворение отпуском -', lib.get_v(j), end = '}\n')
         print("population №", k)
         print("#"*int(buf_cost)*2 + "-"*(k1+k2+k3 - int(buf_cost))*2)
         y_n = input("Если хотите закончить вычисление введите n: y/n ")
