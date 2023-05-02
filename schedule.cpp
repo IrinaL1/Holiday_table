@@ -60,10 +60,10 @@ void Schedule::set_hol(Holiday h){
 //На вход подается массив рабочих дней согласно календарю и число сотрудников
 double Schedule::calc_distr(std::vector<std::vector<int>> calendar, int emp){
     std::vector<int> all_works(12, 0);    //массив трудодней с учётом кол-ва работников
-    std::vector<int> real_works(12, 0);   //массив реальных трудодней с учетом отпусков работников 
-    std::vector<double> work_per(12, 0);  //не знаю, как лучше назвать. Отношение полезной работы к возможной работе
+    std::vector<int> real_hol(12, 0);   //массив реальных трудодней с учетом отпусков работников 
+    std::vector<double> hol_per(12, 0);  //не знаю, как лучше назвать. Отношение дыха к возможной полной работе
     std::vector<int>::iterator it1, it2;
-    double min_w, max_w;
+    double min_h, max_h;
     for(int i = 0; i < calendar.size(); i++){
         all_works[i] = emp * calendar[i].size();
     }
@@ -73,52 +73,61 @@ double Schedule::calc_distr(std::vector<std::vector<int>> calendar, int emp){
             if(it1 != calendar[i].end()){
                 it2 = find(calendar[i].begin(), calendar[i].end(), this->gr[j].get_end_date());
                 if(it2 != calendar[i].end()){
-                    real_works[i] += it2 - it1 + 1;
+                    real_hol[i] += it2 - it1 + 1;
                 }
                 else{
-                    real_works[i] += it2 - it1;
+                    real_hol[i] += it2 - it1;
                 }
             }
             else{
                 it2 = find(calendar[i].begin(), calendar[i].end(), this->gr[j].get_end_date());
                 if(it2 != calendar[i].end()){
-                    real_works[i] += it2 - calendar[i].begin() + 1;
+                    real_hol[i] += it2 - calendar[i].begin() + 1;
                 }
             }
         }
     }
-    for(int i = 0; i < work_per.size(); i++){
-        work_per[i] = static_cast<double>(real_works[i])/static_cast<double>(all_works[i]);
+    //считаем отношение отдыходней ко всем возможным рабочим дням
+    for(int i = 0; i < hol_per.size(); i++){
+        hol_per[i] = static_cast<double>(real_hol[i])/static_cast<double>(all_works[i]);
     }
-    min_w = *min_element(work_per.begin(), work_per.begin());
-    max_w = *max_element(work_per.begin(), work_per.begin());
-    return (1 - (max_w - min_w));
+    //нужно,чтобы разница между днями отдыха (работы) в каждый месяц была минимальной
+    min_h = *min_element(hol_per.begin(), hol_per.end());
+    max_h = *max_element(hol_per.begin(), hol_per.end());
+    return (1 - (max_h - min_h));
 }
 
 //На вход подаются важные даты со включением обеих границ (нач. дата, кон. дата), число сотрудников
 double Schedule::calc_min(std::vector<std::pair<int, int>> imp_dates, int emp){
-    std::vector <double> minim;
     if(imp_dates.size() == 0){
         printf("Список важных дат пуст\n");
         return 1;
     }
+
+    std::vector <int> all_works(imp_dates.size(), 0);
+    std::vector <int> real_hol(imp_dates.size(), 0);
+    std::vector <double> hol_per(imp_dates.size(), 0);
+
     for(int i = 0; i < imp_dates.size(); i++){
-        int workdays = emp * (imp_dates[i].second - imp_dates[i].first + 1);
+        all_works[i] = emp * (imp_dates[i].second - imp_dates[i].first + 1);
         for(int j = 0; j < gr.size(); j++){
-            if(gr[j].get_end_date() >= imp_dates[i].first && gr[j].get_end_date() <= imp_dates[i].second){
-                minim.push_back(1 - (gr[j].get_end_date() - imp_dates[i].first + 1)/workdays);
+            if(gr[j].get_start_date() >= imp_dates[i].first && gr[j].get_end_date() <= imp_dates[i].second){
+                real_hol[i] += gr[j].get_end_date() - gr[j].get_start_date();
+            }  
+            else if(gr[j].get_end_date() >= imp_dates[i].first && gr[j].get_end_date() <= imp_dates[i].second){
+                real_hol[i] += gr[j].get_end_date() - imp_dates[i].first + 1;
             }
             else if(gr[j].get_start_date() >= imp_dates[i].first && gr[j].get_start_date() <= imp_dates[i].second){
-                minim.push_back(1 - (imp_dates[i].second - gr[j].get_start_date() + 1)/workdays);
+                real_hol[i] += imp_dates[i].second - gr[j].get_start_date() + 1;
             }
-            else if(gr[j].get_start_date() >= imp_dates[i].first && gr[j].get_end_date() <= imp_dates[i].second){
-                minim.push_back(1 - (gr[j].get_end_date() - gr[j].get_start_date() + 1)/workdays);
-            }
-            else
-                minim.push_back(1);
         }
     }
-    return *max_element(minim.begin(), minim.end());
+
+    //real_hol - считаем отдыходни. Чем меньше отдыходней, тем лучше.
+    for(int i = 0; i < imp_dates.size(); i++){
+        hol_per[i] = static_cast<double>(real_hol[i])/static_cast<double>(all_works[i]);
+    }
+    return 1 - *max_element(hol_per.begin(), hol_per.end());
 }
 
 extern "C" Schedule * create_S(Holiday* h){

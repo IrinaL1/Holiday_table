@@ -33,7 +33,7 @@ int main(){
             std::cout << "Error:Indefined symbol. Check file.\n";
         }
     }
-    
+    */
     for (int i = 0; i < wishes.size(); i++){
         std::cout << wishes[i].first << ", " << wishes[i].second << std::endl;
     }
@@ -57,33 +57,5 @@ int main(){
     //проверка static_cast
     std::cout << v[0]/v[1] << std::endl;
     std::cout << static_cast<double>(v[0])/static_cast<double>(v[1]) << std::endl;
-*/
-    std::string a = "1 2 3 4 0 5 6 7 8 0 9 10 0";
-    std:: string b;
-    int bf;
-    std::vector<std::vector<int>> kal;
-    std::vector<int> month;
-    for(int i = 0; i <= a.size(); i++){
-        if(a[i] != ' ' and a[i] != '\0'){
-            b += a[i];
-        }
-        else{
-            bf = stoi(b);
-            b = "";
-            if (bf != 0){
-                month.push_back(bf);
-            }
-            else{
-                kal.push_back(month);
-                month.clear();
-            }
-        }
-    };
-    for (int i = 0; i < kal.size(); i++){
-        for (int j = 0; j < kal[i].size(); j++){
-            std::cout << kal[i][j] << "  ";
-        }
-        std::cout << std::endl;
-    }
     return 0;
 }
