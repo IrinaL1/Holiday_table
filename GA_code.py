@@ -2,6 +2,7 @@ import math
 import random
 import copy
 import ctypes
+import time
 
 year = 2023
 
@@ -393,7 +394,7 @@ day_start_end_personal_holidays = []
 population = []
 wishes = []
 grafic = 0
-count_population = 4
+count_population = 100
 for j in range(count_population):
     flag = True
     for i in range(count_personal):
@@ -402,6 +403,7 @@ for j in range(count_population):
     grafic = 0
 k = 0
 prev_cost = 0
+t = time.time()
 while True:
 
     childrens = []
@@ -446,9 +448,11 @@ while True:
             print(rev_date_trans(lib.get_start_date(j)), end = ' - ')
             print(rev_date_trans(lib.get_end_date(j)), end = ' {')
             print('удовлетворение отпуском -', lib.get_v(j), end = '}\n')
-        print("population №", k)
+        times = time.gmtime(time.time() - t)
+        times = time.strftime("%H:%M:%S" , times)
+        print("population №", k, '    ', times)
         print("#"*int(buf_cost)*2 + "-"*(k1+k2+k3 - int(buf_cost))*2)
-        y_n = input("Если хотите закончить вычисление введите n: y/n ")
+        y_n = "y"##input("Если хотите закончить вычисление введите n: y/n ")
         if y_n == "n": break
         print(end = "\n\n\n")
     k += 1
