@@ -29,4 +29,5 @@ class Schedule {
     double calc_cost();
 };
 
+
 #endif //SCHEDULE_H_
